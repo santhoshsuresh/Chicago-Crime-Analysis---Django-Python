@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title%}
+    - Percentage Change Trend
+{% endblock%}
+<script>
+{% block jquery %}
+var endpoint = '/trend/api/get_data'
+var defaultData = []
+var label = []
+
+$('input[type=radio][name=loc]').change(function() {
+    var ch = $("input[name='loc']:checked").val()
+    if(ch == "District"){
+        $("#districtbox").prop("disabled", false); 
+    }
+    else{
+        $("#districtbox").prop("disabled", true); 
+    }
+});
+        
+$( "#search" ).click(function() {
+    var st_d = $('#id_start_date_day option:selected').text();
+    var st_m = $('#id_start_date_month option:selected').text();
+    var st_y = $('#id_start_date_year option:selected').text();
+    var st = st_d + "-" + st_m + "-" + st_y
+
+    var end_d = $('#id_end_date_day option:selected').text();
+    var end_m = $('#id_end_date_month option:selected').text();
+    var end_y = $('#id_end_date_year option:selected').text();
+    var end = end_d + "-" + end_m + "-" + end_y
+
+    var ch = $("input[name='loc']:checked").val()
+    var dist = $('#districtbox').val();
+
+    $.ajax({
+    method: "POST",
+    url: endpoint,
+    data: {
+        "trend": "percentage_analysis",
+        "start_date": st,
+        "end_date": end,
+        "choice": ch,
+        "district": dist
+    },
+    dataType: 'json',
+    success: function(data){
+            defaultData = data.chartdata
+            label = data.labels
+            setchart()
+        },
+    error: function(data){
+            console.log("error")
+            console.log(error_data)
+        },
+    })
+});
+
+function setchart(){
+    var ctx = document.getElementById('myChart').getContext('2d');
+
+    Chart.defaults.global.defaultFontFamily = "Lato";
+    Chart.defaults.global.defaultFontSize = 15;
+    Chart.defaults.global.defaultFontColor = "#777";
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: label,
+            datasets: [{
+                label: 'Percentile Change',
+                data: defaultData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1,
+                hoverBorderWidth: 3
+                
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Percentage Change in Crime',
+                fontSize: 20
+            },
+            legend: {
+                display: false,
+                position: 'bottom'
+            },
+            scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Year'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Percentage'
+						}
+					}]
+				}
+        }
+    });
+}
+
+// var ctx = document.getElementById('myChart').getContext('2d');
+{% endblock %}
+</script>
+
+{% block content %}
+    <h3 class="text-center mb-1"> Perecentage Change of Crimes </h3>
+    <br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5">                
+                {{ form.as_p }}
+                <br>
+                <input type="button" id="search" value="Search">
+            </div>
+            <div class="col-lg-5">
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+{% endblock %} 

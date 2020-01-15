@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+<script>
+{% block jquery %}
+var endpoint = '/trend/api/get_data'
+var defaultData = []
+var label = []
+        
+$( "#search" ).click(function() {
+    var year = $('#year').val();
+
+    $.ajax({
+    method: "POST",
+    url: endpoint,
+    data: {
+        "trend": "risk_analysis",
+        "year": year
+    },
+    dataType: 'json',
+    success: function(data){
+            console.log(data)
+            defaultData = data.chartdata
+            label = data.labels
+            setchart()
+        },
+    error: function(data){
+            console.log("error")
+            console.log(error_data)
+        },
+    })
+});
+
+function setchart(){
+    var ctx = document.getElementById('myChart').getContext('2d');
+
+    Chart.defaults.global.defaultFontFamily = "Lato";
+    Chart.defaults.global.defaultFontSize = 15;
+    Chart.defaults.global.defaultFontColor = "#777";
+
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: label,
+            datasets: [{
+                label: 'Crime count',
+                data: defaultData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1,
+                hoverBorderWidth: 3
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Crime Time Analysis',
+                fontSize: 20
+            },
+            legend: {
+                position: 'bottom'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+{% endblock %}
+</script>
+
+{% block content %}
+    <h3 class="text-center mb-1"> Most Dangerous Districts of Chicago </h3>
+    <br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5"> 
+                Year
+                <input type="text" name="usertxtbox" id="year"/>
+                <br>
+                <input type="button" id="search" value="Search">
+            </div>
+            <div class="col-lg-5">
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+{% endblock %} 

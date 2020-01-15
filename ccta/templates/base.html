@@ -1,0 +1,67 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+        <title>CCA {% block title %}{% endblock %}</title>
+        {% include 'base/css.html' %}
+        {% include 'base/bootstrap_defaults.html' %}
+    </head>
+
+    <body>
+        <h1 class="text-center mb-3"> Chicago Crime Analysis </h1>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link h4" href="/trend/">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle h4" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Trend   
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item h4" href="/trend/percentchange">Percentage Analysis</a>
+                    <a class="dropdown-item h4" href="/trend/arrest_crime">Arrest Crime Distribution</a>
+                    <a class="dropdown-item h4" href="/trend/discrime">District Grading</a>
+                    <a class="dropdown-item h4" href="/trend/beattrend/">Beats Crime Trend</a>
+                    <a class="dropdown-item h4" href="/trend/violence_trend">Violence type Analysis</a>                    
+                    <a class="dropdown-item h4" href="/trend/stddev_time">Crime - Time Analysis (SD)</a>
+                  </div>
+                </li>                
+                <li class="nav-item">
+                  <a class="nav-link h4" href="/trend/about" tabindex="-1" aria-disabled="true">About</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        {% block content %}{% endblock %}
+
+        {% include 'base/js.html' %}
+        <script>
+        $(document).ready(function(){
+          {% block jquery %}{% endblock %}
+        })
+        </script>
+        
+    </body>
+
+    <style>
+        .navbar {
+            width: 100%;
+            background-color: #ABCDEF;
+        }
+        .navbar li{
+            padding: 2px;
+            width: 100px;
+            display:inline-block;
+        }
+
+        .navbar-nav > li > a, .navbar-brand {
+            padding-top:5px !important; padding-bottom:0 !important;
+            height: 30px;
+        }
+        
+    </style>
+</html>

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title%}
+    - Violence type Trend
+{% endblock%}
+<script>
+    {% block jquery %}
+    var endpoint = '/trend/api/get_data'
+    var defaultData = []
+    var label = []
+            
+    
+        $.ajax({
+        method: "POST",
+        url: endpoint,
+        data: {
+            "trend": "violence_analysis"
+        },
+        dataType: 'json',
+        success: function(data){
+                console.log(data)
+                defaultData = data.chartdata;
+                label = data.labels;
+                defaultData2 = data.chartdata2;
+                setchart()
+            },
+        error: function(data){
+                console.log("error")
+                console.log(error_data)
+            },
+        })
+    
+    function setchart(){
+        var ctx = document.getElementById('myChart').getContext('2d');
+    
+        Chart.defaults.global.defaultFontFamily = "Lato";
+        Chart.defaults.global.defaultFontSize = 15;
+        Chart.defaults.global.defaultFontColor = "#777";
+    
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: label,
+                datasets: [{
+                    label: 'Domestic Crime',
+                    data: defaultData,
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1,
+                    hoverBorderWidth: 3,
+                    fill: false
+                },
+                {
+                    label: 'Non Domestic Crime',
+                    data: defaultData2,
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.2)'                        
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1,
+                    hoverBorderWidth: 3,
+                    fill: false
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Domestic/Non-domestic Crime Analysis',
+                    fontSize: 20
+                },
+                legend: {
+                    position: 'bottom'
+                },                
+                scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Year'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Case Count'
+						}
+					}]
+				}
+            }
+        });
+    }
+    
+    {% endblock %}
+</script>
+
+{% block content %}
+    <h3 class="text-center mb-1"> Domestic/Non-Domestic Distribution </h3>
+    <br><br>
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-lg-5">
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+{% endblock %} 
